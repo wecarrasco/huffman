@@ -38,15 +38,15 @@ public class listaNodosHuffman {
     
     public void recorrer(){
 		if(head == null)
-			System.out.println("NULL.");
+			System.out.println("no hay head");
 		else{
 			NodoHuffman temp = this.getHead();
-			System.out.print("Inicio ");
+			
 			while(temp != null){
 				System.out.print(" -> "+temp.getCaracter());
 				temp = temp.getSiguiente();
 			}
-			System.out.println(" -> NULL");
+			
 		}
 	}
 }
