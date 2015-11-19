@@ -8,7 +8,11 @@ package huff;
 import ClasesParaHuffman.*;
 import java.awt.Color;
 import java.awt.Toolkit;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.Scanner;
 import java.util.StringTokenizer;
 import javax.swing.text.Caret;
 
@@ -37,10 +41,61 @@ public class cmd extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        diff = new javax.swing.JDialog();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        ta_diff_Texto1 = new javax.swing.JTextArea();
+        jLabel1 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        ta_diff_Texto2 = new javax.swing.JTextArea();
+        jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         taCMD = new javax.swing.JTextArea();
         tfComando = new javax.swing.JTextField();
         jlPath = new javax.swing.JLabel();
+
+        ta_diff_Texto1.setColumns(20);
+        ta_diff_Texto1.setRows(5);
+        jScrollPane2.setViewportView(ta_diff_Texto1);
+
+        jLabel1.setText("Texto 1");
+
+        ta_diff_Texto2.setColumns(20);
+        ta_diff_Texto2.setRows(5);
+        jScrollPane3.setViewportView(ta_diff_Texto2);
+
+        jLabel2.setText("Texto 2");
+
+        javax.swing.GroupLayout diffLayout = new javax.swing.GroupLayout(diff.getContentPane());
+        diff.getContentPane().setLayout(diffLayout);
+        diffLayout.setHorizontalGroup(
+            diffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(diffLayout.createSequentialGroup()
+                .addGap(156, 156, 156)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addGap(151, 151, 151))
+            .addGroup(diffLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 342, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 342, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        diffLayout.setVerticalGroup(
+            diffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(diffLayout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addGroup(diffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 424, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(diffLayout.createSequentialGroup()
+                        .addGroup(diffLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 424, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -85,11 +140,11 @@ public class cmd extends javax.swing.JFrame {
             String comandoentero = tfComando.getText();
             StringTokenizer st = new StringTokenizer(comandoentero, " ");
             String comando = "", operacion = "";
-            while(st.hasMoreElements()){
+            while (st.hasMoreElements()) {
                 if (comando.contentEquals("")) {
-                    comando = (String)st.nextElement();
-                }else{
-                    operacion = (String)st.nextElement();
+                    comando = (String) st.nextElement();
+                } else {
+                    operacion = (String) st.nextElement();
                 }
             }
             if (comando.contentEquals("cd")) {
@@ -99,48 +154,94 @@ public class cmd extends javax.swing.JFrame {
                     if (!pathHome.contentEquals("C:\\")) {
                         int letrasPath = pathHome.length();
                         int temp = 0;
-                        
-                        for (int i = letrasPath-1; i >= 0; i--) {
+
+                        for (int i = letrasPath - 1; i >= 0; i--) {
                             char ch = pathHome.charAt(i);
-                            if (ch == (char)92) {
+                            if (ch == (char) 92) {
                                 temp = i;
                                 break;
                             }
                         }
-                        home = new File(pathHome.substring(0, temp+1));
-                        taCMD.append("\n"+home.getPath()+"> "+comandoentero);
+                        home = new File(pathHome.substring(0, temp + 1));
+                        taCMD.append("\n" + home.getPath() + "> " + comandoentero);
                         jlPath.setText(home.getPath());
-                    }else{
-                        taCMD.append("\n"+home.getPath()+"> "+comandoentero);
+                    } else {
+                        taCMD.append("\n" + home.getPath() + "> " + comandoentero);
                         System.out.println(home.isDirectory());
                     }
-                }else{
-                    File newfile = new File(home.getPath()+"\\"+operacion);
+                } else {
+                    File newfile = new File(home.getPath() + "\\" + operacion);
                     if (newfile.isDirectory()) {
-                        taCMD.append("\n"+home.getPath()+"> "+comandoentero);
-                        home = new File(home.getPath()+"\\"+operacion);
+                        taCMD.append("\n" + home.getPath() + "> " + comandoentero);
+                        home = new File(home.getPath() + "\\" + operacion);
                         jlPath.setText(home.getPath());
-                    }else{
-                        taCMD.append("\n"+home.getPath()+"> "+operacion+" no es un directorio.");
+                    } else {
+                        taCMD.append("\n" + home.getPath() + "> " + operacion + " no es un directorio.");
                     }
                 }
-            }else if (comando.contentEquals("ls")) {
+                tfComando.setText("");
+            } else if (comando.contentEquals("ls")) {
                 int cantidad = home.list().length;
-                taCMD.append("\n"+home.getPath()+"> "+comandoentero);
+                taCMD.append("\n" + home.getPath() + "> " + comandoentero);
                 for (int i = 0; i < cantidad; i++) {
-                    taCMD.append("\n"+home.list()[i]);
+                    taCMD.append("\n" + home.list()[i]);
                 }
                 tfComando.setText("");
-            }else if (comando.contentEquals("compress")) {
+            } else if (comando.contentEquals("compress")) {
                 listaNodosHuffman lis = new listaNodosHuffman();
                 lis.textToList("hola mundo");
                 lis.recorrer();
                 tfComando.setText("");
-            }else if (comando.contentEquals("decompress")) {
+            } else if (comando.contentEquals("decompress")) {
+
+            } else if (comando.contentEquals("diff")) {
+                StringTokenizer st4 = new StringTokenizer(operacion, " ");
+                String file1 = "texto1.txt", file2 = "texto2.txt";
+                /*
+                while (st4.hasMoreElements()) {
+                    if (file1.contentEquals("")) {                    
+                        file1 = (String) st4.nextElement();
+                    } else {
+                        file2 = (String) st4.nextElement();
+                    }
+                }*/
+
+                File archivo1 = new File(home.getPath() + "\\" + file1);
+                System.out.println("archivo1: "+archivo1.getPath());
+                File archivo2 = new File(home.getPath() + "\\" + file2);
+                System.out.println("archivo2: "+archivo2.getPath());
+                String texto1 = "", texto2 = "";
+                if (archivo1.exists() && archivo2.exists()) {
+                    try {
+
+                        Scanner sc = new Scanner(archivo1);
+                        Scanner sc2 = new Scanner(archivo2);
+                        while (sc.hasNextLine()) {
+                            
+                            texto1 = texto1 + sc.nextLine();
+                            
+                        }
+                        while (sc2.hasNextLine()) {
+                            
+                            texto2 = texto2 + sc2.nextLine();
+                            
+                        }
+                        sc.close();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    ta_diff_Texto1.setText(texto1);
+                    ta_diff_Texto2.setText(texto2);
+                }else{
+                    taCMD.append("\n" + home.getPath() + "> " + operacion + " no existe archivo.");
+                }
                 
-            }else if (comando.contentEquals("diff")) {
                 
-            }else if (comando.contentEquals("clear")) {
+                diff.setModal(true);
+                diff.pack();         
+                diff.setVisible(true);
+                tfComando.setText("");
+            } else if (comando.contentEquals("clear")) {
                 taCMD.setText("");
                 taCMD.append(home.getPath());
                 tfComando.setText("");
@@ -184,9 +285,16 @@ public class cmd extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JDialog diff;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel jlPath;
     private javax.swing.JTextArea taCMD;
+    private javax.swing.JTextArea ta_diff_Texto1;
+    private javax.swing.JTextArea ta_diff_Texto2;
     private javax.swing.JTextField tfComando;
     // End of variables declaration//GEN-END:variables
     File home = new File("C:\\Users\\Walther");
